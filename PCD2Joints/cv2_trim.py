@@ -88,4 +88,4 @@ for image in INPUTDIR.glob('*.' + EXT):
     cv2.imwrite(str(mkfile), crop_img) 
     imgsize_list.append(crop_img.shape[:2])
 
-scipy.io.savemat("imgsize.mat", {"imgsize": imgsize_list})
+scipy.io.savemat(Path(PLYdir_path,"imgsize.mat"), {"imgsize": imgsize_list})

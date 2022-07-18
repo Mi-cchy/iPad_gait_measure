@@ -1,8 +1,8 @@
-function plot3D(result_video, save_name)
-    mat_name = "matfile3D\3Dposes_" + save_name +".mat";
+function plot3D(PLY_file_dir, save_name)
+    mat_name = PLY_file_dir + "\3Dpose.mat";
     load(mat_name)
 
-    v = VideoWriter(result_video +"\" + save_name + '.avi');
+    v = VideoWriter(PLY_file_dir +"\joint_motion.avi");
     v.FrameRate = 60;
     open(v)
 
@@ -24,7 +24,7 @@ function plot3D(result_video, save_name)
             % 空白のフレームを挟みたい
             continue
         end
-        xlim([-1.5 1.5])
+        xlim([-2.5 2.5])
         ylim([-1.0 2.0])
         zlim([-4.5 0.5])
         xlabel('x')

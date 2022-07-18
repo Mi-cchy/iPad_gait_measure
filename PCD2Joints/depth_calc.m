@@ -1,9 +1,12 @@
-function depth_calc(PLY_file_dir, save_name, isFRONT)
+function depth_calc(PLY_file_dir, save_name)
 
-    posefile_name = '.\matfile2D\poses_' +save_name + '.mat'
-    load(posefile_name)
-    load('imgsize.mat')
+    posefile_dir = PLY_file_dir + '\2Dpose.mat'
+    imgsize_dir = PLY_file_dir + '\imgsize.mat'
+    load(posefile_dir)
+    load(imgsize_dir)
     load('openpose_map.mat')
+    poses
+    poses=num2cell(poses,2)
 
     %{
     そのフレームに関節位置があるか調べる
@@ -21,17 +24,6 @@ function depth_calc(PLY_file_dir, save_name, isFRONT)
     oldFolder = cd(PLY_file_dir)
     ply_list = dir('*.ply');
     
-    load("D:\KWAP_true_old\ipad\camparam1030.mat")
-    rotv1 = cameraParams.RotationVectors(end,:);
-    if isFRONT == 1
-        rotv1(2) = -rotv1(2);
-    else
-        rotv1(2) = 0;
-    end
-    rotv1 = [0.04 rotv1(2) 0.04];
-    rot1 = rotationVectorToMatrix(rotv1);
-    trans1 = [0 0 0];
-    tform1 = rigid3d(rot1,trans1);
 
     for i = 1:length(ply_list)
         i
@@ -45,17 +37,17 @@ function depth_calc(PLY_file_dir, save_name, isFRONT)
 %             rot1 = rotationVectorToMatrix(rotv1);
 %             trans1 = [0 0 0];
 %             tform1 = rigid3d(rot1,trans1);
-            ptCloud = pctransform(ptCloud, tform1);
+%             ptCloud = pctransform(ptCloud, tform1);
             % ここまでーーーーーーーーーーーーーーーーーーーーーーー
             
-             % 床平面の除去
-            maxDistance = 0.03;
-            maxAngularDistance = 10;
-            referenceVector = [0,1,0];
-            [model1,inlierIndices,outlierIndices] = pcfitplane(ptCloud,...
-                        maxDistance,referenceVector,maxAngularDistance);
-    %         plane1 = select(ptCloud,inlierIndices);
-            ptCloud = select(ptCloud,outlierIndices);
+%              % 床平面の除去
+%             maxDistance = 0.03;
+%             maxAngularDistance = 10;
+%             referenceVector = [0,1,0];
+%             [model1,inlierIndices,outlierIndices] = pcfitplane(ptCloud,...
+%                         maxDistance,referenceVector,maxAngularDistance);
+%     %         plane1 = select(ptCloud,inlierIndices);
+%             ptCloud = select(ptCloud,outlierIndices);
 
 
             % ここまで
@@ -91,6 +83,13 @@ function depth_calc(PLY_file_dir, save_name, isFRONT)
                         poses3d{i,k}(j,3) = NaN;
                     end
                 end
+                
+                figure
+                pcshow(ptCloud.Location)
+                hold on
+                pcshow(ptCloudB.Location,'r');
+                legend('Point Cloud','Points within ROI','Location','southoutside','Color',[1 1 1])
+                hold off
                 
                 % ここで膝と足首の中間の位置を算出
                 j = 26;
@@ -139,6 +138,6 @@ function depth_calc(PLY_file_dir, save_name, isFRONT)
     end
 
     cd(oldFolder)
-    out_name = append(".\matfile3D\3Dposes_", save_name, ".mat");
-    save(out_name,'poses3d')
+    pose3D_dir = PLY_file_dir + '\3Dpose.mat'
+    save(pose3D_dir,'poses3d')
 end

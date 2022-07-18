@@ -2,27 +2,22 @@
 % ディレクトリを指定
 % PLY_file_dir = "D:\ipad_data\[01]KAWP\2021_1002\5m_f\white\2021-10-02--11-11-22\PLY"
 
-function exe_all(PLY_file_dir, isFRONT)
+function exe_all(PLY_file_dir)
 %     clear;
     tic
 
     dir_names = strsplit(PLY_file_dir, '\')
-%     save_name = append(dir_names(end-2),'_',dir_names(end-1))
-    if isFRONT == 1
-        save_name = append(dir_names(end-1),'_front')
-    else
-        save_name = append(dir_names(end-1))
-    end
+    save_name = append(dir_names(end-1))
 
    %% pngファイルの作成
-    make_XYpic(PLY_file_dir, isFRONT)
+    make_XYpic(PLY_file_dir)
 
     %% pngのトリミング
     cmd = append('python .\cv2_trim.py ', '"', PLY_file_dir,'" "', save_name, '"')
     status = system(cmd)
 
     %% OpenPoseの実行
-    oldFolder = cd("c:\tools\openpose")
+    oldFolder = cd("c:\openpose")
     % bin\OpenPoseDemo.exe --image_dir "C:\Users\mitsuhiro\Documents\measure_sys\trimmed_images" --net_resolution "320x240" --write_json "C:\Users\mitsuhiro\Documents\measure_sys\json0911" --write_images "C:\Users\mitsuhiro\Documents\measure_sys\result_render"
 
     % % 要修正
@@ -42,15 +37,13 @@ function exe_all(PLY_file_dir, isFRONT)
 
     cd(oldFolder)
     %% jsonのパース
-    cmd = append('python .\json2mat.py ',  '"', output_json_dir, '" "', save_name, '"')
+    cmd = append('python .\json2mat.py ',  '"', output_json_dir, '"')
     status = system(cmd)
 
     %% 深度の取得
-    depth_calc(PLY_file_dir, save_name, isFRONT)
+    depth_calc(PLY_file_dir, save_name)
 
     %% アニメーションの作成
-    result_video = PLY_file_dir + "\result_video";
-    mkdir(result_video)
-    plot3D(result_video, save_name)
-    toc
+    plot3D(PLY_file_dir, save_name)
+%     toc
 end
